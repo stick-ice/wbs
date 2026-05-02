@@ -14,6 +14,27 @@ interface Props {
 
 const ROW_HEIGHT = 52;
 
+const DAY_TYPE_HEADER_BG: Record<string, string> = {
+  saturday: 'bg-blue-50',
+  sunday:   'bg-red-50',
+  holiday:  'bg-red-50',
+  weekday:  '',
+};
+
+const DAY_TYPE_COL_BG: Record<string, string> = {
+  saturday: 'bg-blue-50',
+  sunday:   'bg-red-50',
+  holiday:  'bg-red-50',
+  weekday:  '',
+};
+
+const DAY_TYPE_TEXT: Record<string, string> = {
+  saturday: 'text-blue-600',
+  sunday:   'text-red-500',
+  holiday:  'text-red-500',
+  weekday:  'text-gray-600',
+};
+
 const LEVEL_BG: Record<string, string> = {
   large: 'bg-gray-100',
   medium: 'bg-white',
@@ -122,15 +143,18 @@ export default function GanttChart({ tasks, mode, refDate, onEdit, onDelete, onA
       <div className="flex-1 flex flex-col overflow-hidden">
         <div className="h-8 bg-gray-50 border-b border-gray-200 overflow-x-auto flex-none">
           <div className="flex h-full" style={{ width: totalWidth }}>
-            {columns.map((col, i) => (
-              <div
-                key={i}
-                style={{ width: colWidth, minWidth: colWidth }}
-                className="flex items-center justify-center text-xs text-gray-600 border-r border-gray-200 last:border-r-0"
-              >
-                {col.label}
-              </div>
-            ))}
+            {columns.map((col, i) => {
+              const dt = col.dayType ?? 'weekday';
+              return (
+                <div
+                  key={i}
+                  style={{ width: colWidth, minWidth: colWidth }}
+                  className={`flex items-center justify-center text-xs border-r border-gray-200 last:border-r-0 ${DAY_TYPE_HEADER_BG[dt]} ${DAY_TYPE_TEXT[dt]}`}
+                >
+                  {col.label}
+                </div>
+              );
+            })}
           </div>
         </div>
         <div ref={rightRef} className="overflow-auto flex-1">
@@ -149,13 +173,16 @@ export default function GanttChart({ tasks, mode, refDate, onEdit, onDelete, onA
                 >
                   {/* Column grid lines */}
                   <div className="absolute inset-0 flex pointer-events-none">
-                    {columns.map((_, i) => (
-                      <div
-                        key={i}
-                        style={{ width: colWidth, minWidth: colWidth }}
-                        className="border-r border-gray-100 last:border-r-0 h-full"
-                      />
-                    ))}
+                    {columns.map((col, i) => {
+                      const dt = col.dayType ?? 'weekday';
+                      return (
+                        <div
+                          key={i}
+                          style={{ width: colWidth, minWidth: colWidth }}
+                          className={`border-r border-gray-100 last:border-r-0 h-full ${DAY_TYPE_COL_BG[dt]}`}
+                        />
+                      );
+                    })}
                   </div>
 
                   {/* Planned bar */}

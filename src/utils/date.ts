@@ -1,4 +1,13 @@
 import type { ViewMode } from '../types';
+import { isHoliday } from 'japanese-holidays';
+
+function getDayType(date: Date): 'saturday' | 'sunday' | 'holiday' | 'weekday' {
+  if (isHoliday(date)) return 'holiday';
+  const d = date.getDay();
+  if (d === 6) return 'saturday';
+  if (d === 0) return 'sunday';
+  return 'weekday';
+}
 
 export function getViewRange(mode: ViewMode, refDate: Date): [Date, Date] {
   const d = new Date(refDate);
@@ -29,6 +38,7 @@ export interface ColumnInfo {
   label: string;
   start: Date;
   end: Date;
+  dayType?: 'saturday' | 'sunday' | 'holiday' | 'weekday';
 }
 
 export function getColumns(mode: ViewMode, viewStart: Date, viewEnd: Date): ColumnInfo[] {
@@ -46,7 +56,7 @@ export function getColumns(mode: ViewMode, viewStart: Date, viewEnd: Date): Colu
       const start = new Date(cur);
       const end = new Date(cur);
       end.setDate(end.getDate() + 1);
-      cols.push({ label: `${cur.getDate()}`, start, end });
+      cols.push({ label: `${cur.getDate()}`, start, end, dayType: getDayType(start) });
       cur.setDate(cur.getDate() + 1);
     }
   }

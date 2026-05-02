@@ -3,8 +3,10 @@ import type { ViewMode } from '../types';
 export function getViewRange(mode: ViewMode, refDate: Date): [Date, Date] {
   const d = new Date(refDate);
   if (mode === 'year') {
-    const start = new Date(d.getFullYear(), 0, 1);
-    const end = new Date(d.getFullYear() + 1, 0, 1);
+    // 4月始まり年度
+    const fiscalYear = d.getMonth() >= 3 ? d.getFullYear() : d.getFullYear() - 1;
+    const start = new Date(fiscalYear, 3, 1);
+    const end = new Date(fiscalYear + 1, 3, 1);
     return [start, end];
   }
   if (mode === 'month') {
@@ -32,10 +34,11 @@ export interface ColumnInfo {
 export function getColumns(mode: ViewMode, viewStart: Date, viewEnd: Date): ColumnInfo[] {
   const cols: ColumnInfo[] = [];
   if (mode === 'year') {
-    for (let m = 0; m < 12; m++) {
-      const start = new Date(viewStart.getFullYear(), m, 1);
-      const end = new Date(viewStart.getFullYear(), m + 1, 1);
-      cols.push({ label: `${m + 1}月`, start, end });
+    // viewStart は4月1日なので、そこから12か月分を順番に生成
+    for (let i = 0; i < 12; i++) {
+      const start = new Date(viewStart.getFullYear(), viewStart.getMonth() + i, 1);
+      const end = new Date(viewStart.getFullYear(), viewStart.getMonth() + i + 1, 1);
+      cols.push({ label: `${start.getMonth() + 1}月`, start, end });
     }
   } else {
     const cur = new Date(viewStart);
@@ -83,7 +86,10 @@ export function getBarStyle(
 
 export function getViewLabel(mode: ViewMode, refDate: Date): string {
   const d = refDate;
-  if (mode === 'year') return `${d.getFullYear()}年`;
+  if (mode === 'year') {
+    const [ys] = getViewRange('year', d);
+    return `${ys.getFullYear()}年度`;
+  }
   if (mode === 'month') return `${d.getFullYear()}年${d.getMonth() + 1}月`;
   const [weekStart] = getViewRange('week', d);
   const weekNum = getWeekOfMonth(weekStart);

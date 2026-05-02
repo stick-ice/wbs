@@ -78,5 +78,10 @@ export function useTasks() {
     return null;
   };
 
-  return { tasks, addTask, updateTask, deleteTask, reorderTask, getChildLevel };
+  const replaceTasks = useCallback((next: Task[]) => {
+    saveTasks(next);
+    setTasks(next);
+  }, []);
+
+  return { tasks, addTask, updateTask, deleteTask, reorderTask, getChildLevel, replaceTasks };
 }

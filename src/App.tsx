@@ -4,6 +4,7 @@ import { useTasks } from './hooks/useTasks';
 import ViewControls from './components/ViewControls';
 import TaskForm from './components/TaskForm';
 import GanttChart from './components/GanttChart';
+import DataControls from './components/DataControls';
 
 interface FormState {
   task?: Task;
@@ -12,7 +13,7 @@ interface FormState {
 }
 
 export default function App() {
-  const { tasks, addTask, updateTask, deleteTask } = useTasks();
+  const { tasks, addTask, updateTask, deleteTask, replaceTasks } = useTasks();
   const [mode, setMode] = useState<ViewMode>('month');
   const [refDate, setRefDate] = useState<Date>(new Date());
   const [formState, setFormState] = useState<FormState | null>(null);
@@ -45,12 +46,15 @@ export default function App() {
       <div className="max-w-screen-2xl mx-auto">
         <div className="flex items-center justify-between mb-4 gap-4 flex-wrap">
           <h1 className="text-xl font-bold text-gray-800">WBS ガントチャート</h1>
-          <button
-            onClick={() => openAdd('large', null)}
-            className="px-4 py-2 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700"
-          >
-            + タスクを追加
-          </button>
+          <div className="flex items-center gap-3">
+            <DataControls tasks={tasks} onImport={replaceTasks} />
+            <button
+              onClick={() => openAdd('large', null)}
+              className="px-4 py-2 bg-blue-600 text-white rounded text-sm font-medium hover:bg-blue-700"
+            >
+              + タスクを追加
+            </button>
+          </div>
         </div>
 
         <div className="mb-3">
